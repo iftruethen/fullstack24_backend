@@ -35,6 +35,14 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
     let newPerson = request.body
+    if (!newPerson.name || !newPerson.number) {
+        let errorMessage = ""
+        if (!newPerson.name) {errorMessage = "name missing"}
+        else if (!newPerson.number) {errorMessage = "number missing"}
+        return response.status(403).send(`Error: ${errorMessage}`)
+    }
+    const alreadyExist = persons.find(p => p.name.toLowerCase() === newPerson.name.toLowerCase())
+    if (alreadyExist) {return response.status(403).send(`Error: person with specified name already exists`)}
     const id = Math.floor(Math.random()*10000)
     newPerson = {...newPerson, id:id}
     persons = persons.concat(newPerson)
