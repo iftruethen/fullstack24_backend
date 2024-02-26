@@ -55,6 +55,12 @@ app.post('/api/persons', (request, response) => {
     response.json(newPerson)
 })
 
+app.put('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    persons = persons.map(p => p.id === id ? request.body : p)
+    response.json(request.body)
+})
+
 const PORT = process.env.PORT || 3001
 app.listen(PORT)
 console.log(`Server running on port ${PORT}...`)
