@@ -1,0 +1,1 @@
+GET https://fullstack24-backend.onrender.com/info HTTP/1.1
