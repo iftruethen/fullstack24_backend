@@ -44,37 +44,32 @@ app.delete('/api/persons/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const newPerson = new Person(request.body)
-    newPerson.save()
-        .then(result => {
-            response.status(201).json(request.body)
-        })
-        .catch(error => {
-            response.status(403).end()
-        })
+    Person.find({name:request.body.name})
+    .then(result => {
+        if (result.length === 0) {
+            newPerson.save()
+            .then(result => {
+                response.status(201).json(request.body)
+            })
+            .catch(error => next(error))
+        } else {
+            response.status(409).end()
+        }
+    })
     
-    /* let newPerson = request.body
-    if (!newPerson.name || !newPerson.number) {
-        let errorMessage = ""
-        if (!newPerson.name) {errorMessage = "name missing"}
-        else if (!newPerson.number) {errorMessage = "number missing"}
-        return response.status(403).send(`Error: ${errorMessage}`)
-    }
-    const alreadyExist = persons.find(p => p.name.toLowerCase() === newPerson.name.toLowerCase())
-    if (alreadyExist) {return response.status(403).send(`Error: person with specified name already exists`)}
-    const id = Math.floor(Math.random()*10000)
-    newPerson = {...newPerson, id:id}
-    persons = persons.concat(newPerson)
-    response.json(newPerson) */
 })
 
-app.put('/api/persons/:id', (request, response) => {
-    console.log("handle put request")
-    response.status(200).end()
-    /* const id = Number(request.params.id)
-    persons = persons.map(p => p.id === id ? request.body : p)
-    response.json(request.body) */
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+    .then(updatedPerson => response.json(updatedPerson))
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
