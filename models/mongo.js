@@ -6,7 +6,10 @@ mongoose.connect(process.env.MONGODB_URL)
     .catch(error => console.log(`failed to connect ${error.message}`))
 
 const personSchema = new mongoose.Schema({
-    name: String,
+    name: {
+        type: String,
+        minlength: 3
+    },
     number: String
 })
 
